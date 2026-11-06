@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HERE EDIT — Video Studio</title>
+<style>
+:root{--bg:#0b0d14;--panel:#141824;--panel2:#1b2130;--line:#2a3245;--text:#f4f6fb;--muted:#9aa5b8;--accent:#8b5cf6;--accent2:#22d3ee}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,Arial,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:#222a3b;color:var(--text);padding:9px 13px;border-radius:9px}
+button:hover{border-color:var(--accent)}button.primary{background:var(--accent);border-color:var(--accent);font-weight:700}
+header{height:62px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#10141e;position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:1px;font-size:18px}.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#22d3ee);display:grid;place-items:center;font-weight:900;color:#080b12}
+.top-actions{display:flex;gap:8px;align-items:center}.save-status{color:var(--muted);font-size:12px}
+main{padding:14px;max-width:1600px;margin:auto}.workspace{display:grid;grid-template-columns:245px minmax(300px,1fr) 260px;gap:12px;min-height:490px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}.panel-head{padding:13px 14px;border-bottom:1px solid var(--line);font-weight:750;display:flex;justify-content:space-between;align-items:center}.panel-body{padding:13px}
+.tabbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tab{padding:7px 10px;border-radius:8px;background:transparent;color:var(--muted);border:1px solid transparent}.tab.active{background:#29213f;color:#d9c8ff;border-color:#5b3a91}
+.upload-zone{border:1px dashed #59647b;border-radius:10px;padding:18px 10px;text-align:center;color:var(--muted);margin-bottom:12px}.upload-zone strong{display:block;color:var(--text);margin:5px 0}
+.media-list{display:grid;gap:8px}.media-item{padding:9px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;gap:8px;min-width:0}.media-icon{width:34px;height:30px;background:#30394e;border-radius:6px;display:grid;place-items:center}.media-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;font-size:12px}
+.center{display:flex;flex-direction:column;gap:12px;min-width:0}.preview-panel{flex:1;display:flex;flex-direction:column}.preview-stage{background:#07090e;flex:1;min-height:340px;display:grid;place-items:center;position:relative;overflow:hidden;padding:12px}.preview-wrap{position:relative;max-width:100%;max-height:100%;display:grid;place-items:center}.preview-wrap video{display:block;max-width:100%;max-height:390px;background:#000}.empty-preview{color:#68758b;text-align:center}.overlay-text{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-weight:900;font-size:28px;text-shadow:0 2px 7px #000;white-space:nowrap;pointer-events:none;text-align:center}
+.preview-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px;border-top:1px solid var(--line)}.time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px}
+.inspector-section{padding:12px 0;border-bottom:1px solid var(--line)}.inspector-section:last-child{border:0}.inspector-section h4{margin:0 0 10px;font-size:12px;color:#c8d0df;text-transform:uppercase;letter-spacing:.7px}
+label{display:block;color:var(--muted);font-size:12px;margin:9px 0 5px}input[type=text],input[type=number],select{width:100%;background:#0e1320;border:1px solid var(--line);border-radius:7px;padding:9px;color:var(--text)}input[type=range]{width:100%;accent-color:var(--accent)}input[type=color]{width:100%;height:34px;background:none;border:0}
+.timeline-panel{margin-top:12px}.timeline-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.timeline-tools{display:flex;gap:7px;flex-wrap:wrap}.timeline-ruler{height:25px;margin:12px 0 5px 118px;display:flex;justify-content:space-between;color:#77849a;font-size:10px;border-bottom:1px solid var(--line)}
+.track{display:grid;grid-template-columns:108px 1fr;gap:10px;align-items:center;margin:8px 0}.track-name{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}.track-lane{height:42px;background:#0e1320;border:1px solid var(--line);border-radius:7px;position:relative;overflow:hidden}
+.clip{height:100%;min-width:80px;background:linear-gradient(100deg,#5b35a6,#8b5cf6);border-radius:5px;padding:7px 9px;font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.playhead{position:absolute;top:0;bottom:0;width:2px;background:#fbbf24;left:0;z-index:2;pointer-events:none}.playhead:before{content:"";position:absolute;top:0;left:-4px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid #fbbf24}
+.trim-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.muted{color:var(--muted)}.small{font-size:11px;color:var(--muted)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#242d40;border:1px solid #53617b;padding:10px 16px;border-radius:9px;display:none;z-index:20}
+@media(max-width:950px){.workspace{grid-template-columns:210px minmax(260px,1fr)}.inspector{grid-column:1/-1}.inspector .panel-body{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}}
+@media(max-width:650px){header{padding:0 10px}.top-actions .save-status{display:none}main{padding:8px}.workspace{grid-template-columns:1fr}.media-panel{order:2}.center{order:1}.inspector{order:3}.inspector .panel-body{display:block}.preview-stage{min-height:240px}.preview-wrap video{max-height:260px}.track{grid-template-columns:70px 1fr}.timeline-ruler{margin-left:80px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">H</div><span>HERE EDIT</span><span class="small">BETA 0.1</span></div>
+  <div class="top-actions"><span class="save-status" id="saveStatus">Local draft • Not uploaded</span><button id="newProject">New</button><button class="primary" id="exportBtn">Export</button></div>
+</header>
+<main>
+  <div class="workspace">
+    <section class="panel media-panel">
+      <div class="panel-head">Media Library <span class="small" id="mediaCount">0 files</span></div>
+      <div class="panel-body">
+        <div class="tabbar"><button class="tab active">Media</button><button class="tab" id="textTab">Text</button><button class="tab" id="audioTab">Audio</button></div>
+        <div class="upload-zone"><div style="font-size:25px">＋</div><strong>Import media</strong><span class="small">Video, audio or image files</span><p><button class="primary" id="browseBtn">Browse files</button></p><input id="fileInput" type="file" accept="video/*,audio/*,image/*" multiple hidden></div>
+        <div class="media-list" id="mediaList"><div class="small">Your imported files will appear here.</div></div>
+        <p class="small" style="margin-top:14px">Tip: Select a video to preview it, then add it to the timeline.</p>
+      </div>
+    </section>
+    <section class="center">
+      <div class="panel preview-panel">
+        <div class="panel-head"><span>Preview</span><span class="small" id="projectLabel">Untitled Project</span></div>
+        <div class="preview-stage">
+          <div class="preview-wrap" id="previewWrap">
+            <div class="empty-preview" id="emptyPreview"><div style="font-size:38px">▶</div><strong>Welcome to HERE EDIT</strong><p class="small">Import a video to begin editing</p></div>
+            <video id="video" playsinline controls hidden></video>
+            <div class="overlay-text" id="textOverlay" hidden>YOUR TEXT</div>
+          </div>
+        </div>
+        <div class="preview-controls"><button id="backBtn">−5s</button><button class="primary" id="playBtn">▶ Play</button><button id="forwardBtn">+5s</button><span class="time" id="timeDisplay">00:00 / 00:00</span></div>
+      </div>
+    </section>
+    <section class="panel inspector">
+      <div class="panel-head">Inspector <span class="small">Edit settings</span></div>
+      <div class="panel-body">
+        <div class="inspector-section"><h4>Project</h4><label>Project name</label><input type="text" id="projectName" value="Untitled Project"><label>Aspect ratio</label><select id="aspect"><option value="16/9">16:9 — YouTube</option><option value="9/16">9:16 — Reels / Shorts</option><option value="1/1">1:1 — Square</option><option value="4/5">4:5 — Portrait</option></select></div>
+        <div class="inspector-section"><h4>Trim video</h4><div class="trim-row"><div><label>Start (seconds)</label><input type="number" id="trimStart" min="0" step=".1" value="0"></div><div><label>End (seconds)</label><input type="number" id="trimEnd" min="0" step=".1" value="0"></div></div><button style="width:100%;margin-top:10px" id="applyTrim">Apply preview trim</button></div>
+        <div class="inspector-section"><h4>Text overlay</h4><label>Text</label><input type="text" id="overlayInput" placeholder="Type your title..."><label>Text size</label><input type="range" id="textSize" min="14" max="64" value="28"><label>Text colour</label><input type="color" id="textColor" value="#ffffff"></div>
+        <div class="inspector-section"><h4>Video look</h4><label>Brightness</label><input type="range" id="brightness" min="50" max="150" value="100"><label>Contrast</label><input type="range" id="contrast" min="50" max="150" value="100"><label>Saturation</label><input type="range" id="saturation" min="0" max="200" value="100"><button style="width:100%;margin-top:10px" id="resetLook">Reset look</button></div>
+      </div>
+    </section>
+  </div>
+  <section class="panel timeline-panel">
+    <div class="panel-body">
+      <div class="timeline-top"><div><strong>Timeline</strong> <span class="small">— arrange your edit</span></div><div class="timeline-tools"><button id="addVideo">＋ Video clip</button><button id="addText">＋ Text</button><button id="clearTimeline">Clear timeline</button></div></div>
+      <div class="timeline-ruler"><span>00:00</span><span>00:05</span><span>00:10</span><span>00:15</span><span>00:20</span><span>00:25</span><span>00:30</span></div>
+      <div class="track"><div class="track-name">Video 1</div><div class="track-lane" id="videoLane"><div class="playhead" id="playhead"></div><div class="small" style="padding:12px" id="videoPlaceholder">Import a video and click “Video clip”</div></div></div>
+      <div class="track"><div class="track-name">Text</div><div class="track-lane" id="textLane"><div class="small" style="padding:12px">No text clips yet</div></div></div>
+      <div class="track"><div class="track-name">Audio</div><div class="track-lane"><div class="small" style="padding:12px">Audio track — coming soon</div></div></div>
+      <p class="small">Prototype note: edits currently preview in your browser. Final video rendering, multi-track editing, cloud projects and database sync are planned for later versions.</p>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const $=id=>document.getElementById(id);
+const video=$('video'); let files=[], activeFile=null, objectUrl=null, trimIn=0, trimOut=0, timelineHasVideo=false;
+function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2400)}
+function fmt(t){if(!Number.isFinite(t))t=0;return String(Math.floor(t/60)).padStart(2,'0')+':'+String(Math.floor(t%60)).padStart(2,'0')}
+function updateTime(){$('timeDisplay').textContent=fmt(video.currentTime)+' / '+fmt(video.duration);if(video.duration){$('playhead').style.left=(video.currentTime/video.duration*100)+'%'}}
+function loadFile(file){activeFile=file;if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=URL.createObjectURL(file);video.src=objectUrl;video.hidden=false;$('emptyPreview').hidden=true;video.load();$('trimStart').value=0;$('trimEnd').value=0;trimIn=0;trimOut=0;video.onloadedmetadata=()=>{$('trimEnd').value=video.duration.toFixed(1);updateTime()};toast('Loaded '+file.name)}
+$('browseBtn').onclick=()=>$('fileInput').click();
+$('fileInput').onchange=e=>{for(const f of e.target.files){files.push(f);const row=document.createElement('div');row.className='media-item';row.innerHTML='<div class="media-icon">▣</div><div class="media-name"></div><button class="small">Add</button>' ;row.querySelector('.media-name').textContent=f.name;row.querySelector('button').onclick=()=>{if(f.type.startsWith('video/'))loadFile(f);else toast('This prototype previews video files only.')};$('mediaList').appendChild(row);if(f.type.startsWith('video/')&&!activeFile)loadFile(f)}$('mediaCount').textContent=files.length+' files';e.target.value=''};
+$('playBtn').onclick=()=>{if(!video.src)return toast('Import a video first');if(video.paused){video.play();$('playBtn').textContent='❚❚ Pause'}else{video.pause();$('playBtn').textContent='▶ Play'}};
+video.onplay=()=>$('playBtn').textContent='❚❚ Pause';video.onpause=()=>$('playBtn').textContent='▶ Play';video.ontimeupdate=()=>{if(trimOut>trimIn&&video.currentTime>=trimOut){video.pause();video.currentTime=trimOut}updateTime()};
+$('backBtn').onclick=()=>video.currentTime=Math.max(0,video.currentTime-5);$('forwardBtn').onclick=()=>video.currentTime=Math.min(video.duration||0,video.currentTime+5);
+$('applyTrim').onclick=()=>{if(!video.src)return toast('Import a video first');trimIn=Math.max(0,Number($('trimStart').value)||0);trimOut=Math.min(video.duration,Number($('trimEnd').value)||video.duration);if(trimOut<=trimIn)return toast('End time must be after start time');video.currentTime=trimIn;toast('Preview trim applied')};
+$('addVideo').onclick=()=>{if(!activeFile)return toast('Import a video first');timelineHasVideo=true;$('videoLane').querySelectorAll('.clip,.small').forEach(n=>n.remove());let c=document.createElement('div');c.className='clip';c.textContent=activeFile.name;$('videoLane').appendChild(c);toast('Video clip added to timeline')};
+function addTextClip(){const t=$('overlayInput').value.trim()||'YOUR TEXT';$('textOverlay').textContent=t;$('textOverlay').hidden=false;$('textLane').innerHTML='';const c=document.createElement('div');c.className='clip';c.style.background='linear-gradient(100deg,#087f8c,#22d3ee)';c.textContent=t;$('textLane').appendChild(c)}
+$('addText').onclick=addTextClip;$('textTab').onclick=()=>{$('overlayInput').focus();toast('Add text using the Inspector panel')};$('audioTab').onclick=()=>toast('Audio editing is planned for a future version');
+$('overlayInput').oninput=()=>{if($('overlayInput').value){$('textOverlay').textContent=$('overlayInput').value;$('textOverlay').hidden=false}else $('textOverlay').hidden=true};
+$('textSize').oninput=e=>$('textOverlay').style.fontSize=e.target.value+'px';$('textColor').oninput=e=>$('textOverlay').style.color=e.target.value;
+function filter(){video.style.filter=`brightness(${$('brightness').value}%) contrast(${$('contrast').value}%) saturate(${$('saturation').value}%)`}
+['brightness','contrast','saturation'].forEach(id=>$(id).oninput=filter);
+$('resetLook').onclick=()=>{['brightness','contrast','saturation'].forEach(id=>$(id).value=100);filter()};
+$('aspect').onchange=e=>{$('previewWrap').style.aspectRatio=e.target.value;$('previewWrap').style.width=e.target.value==='9/16'?'220px':e.target.value==='1/1'?'330px':'100%';$('previewWrap').style.maxHeight='100%'};
+$('projectName').oninput=e=>{$('projectLabel').textContent=e.target.value||'Untitled Project'};
+$('clearTimeline').onclick=()=>{$('videoLane').innerHTML='<div class="playhead" id="playhead"></div><div class="small" style="padding:12px" id="videoPlaceholder">Import a video and click “Video clip”</div>';$('textLane').innerHTML='<div class="small" style="padding:12px">No text clips yet</div>';toast('Timeline cleared')};
+$('newProject').onclick=()=>{if(confirm('Start a new project? This clears the current preview and timeline.')){video.pause();video.removeAttribute('src');video.load();video.hidden=true;$('emptyPreview').hidden=false;activeFile=null;trimIn=trimOut=0;$('projectName').value='Untitled Project';$('projectLabel').textContent='Untitled Project';$('clearTimeline').click();toast('New project ready')}};
+$('exportBtn').onclick=()=>toast('Export rendering is coming in a future version. Your preview edits are not yet rendered into a video file.');
+video.onloadedmetadata=updateTime;
+</script>
+</body>
+</html>
